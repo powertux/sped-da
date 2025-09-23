@@ -53,7 +53,7 @@ class DanfeA5 extends DaCommon
      *
      * @var array
      */
-    public $tPagPermitidasExibirFaturaDuplicata = []; 
+    public $tPagPermitidasExibirFaturaDuplicata = [];
     /**
      * Parâmetro do controle se deve concatenar automaticamente informações complementares
      * na descrição do produto, como por exemplo, informações sobre impostos.
@@ -73,7 +73,7 @@ class DanfeA5 extends DaCommon
      * @var boolean
      */
     protected $descProdQuebraLinha = true;
-     /**
+    /**
      * Parâmetro para ocultar a unidade tributável nos itens
      *
      * @var boolean
@@ -84,7 +84,7 @@ class DanfeA5 extends DaCommon
      *
      * @var string
      */
-    protected $siteEmitente = '';    
+    protected $siteEmitente = '';
     /**
      * XML NFe
      *
@@ -414,7 +414,7 @@ class DanfeA5 extends DaCommon
             $flagVTT = $flagVTT || strpos(strtolower(trim($this->textoAdic)), 'vl');
             $flagVTT = $flagVTT && strpos(strtolower(trim($this->textoAdic)), 'aprox');
             $flagVTT = $flagVTT && (strpos(strtolower(trim($this->textoAdic)), 'trib') ||
-                    strpos(strtolower(trim($this->textoAdic)), 'imp'));
+                strpos(strtolower(trim($this->textoAdic)), 'imp'));
             $vTotTrib = $this->getTagValue($this->ICMSTot, 'vTotTrib');
             if ($vTotTrib != '' && !$flagVTT) {
                 $this->textoAdic .= "\n Valor Aproximado dos Tributos : R$ "
@@ -660,7 +660,7 @@ class DanfeA5 extends DaCommon
         $y = $this->destinatarioDANFE($x, $y + 1);
 
 
-// gug
+        // gug
 
         //coloca os dados do local de retirada
         if (isset($this->retirada)) {
@@ -682,42 +682,42 @@ class DanfeA5 extends DaCommon
             }
         }
         //caso tenha boleto imprimir fatura
-            if ($this->dup->length > 0) {
-            if( empty($this->tPagPermitidasExibirFaturaDuplicata) || in_array($fPag, $this->tPagPermitidasExibirFaturaDuplicata) ) {
+        if ($this->dup->length > 0) {
+            if (empty($this->tPagPermitidasExibirFaturaDuplicata) || in_array($fPag, $this->tPagPermitidasExibirFaturaDuplicata)) {
                 $y = $this->fatura($x, $y + 1);
             }
         } elseif ($this->exibirTextoFatura) {
-                //Se somente tiver a forma de pagamento sem pagamento não imprimir nada
-                if (count($formaPag) == '1' && isset($formaPag[90])) {
-                    $y = $y;
-                } else {
-                    //caso tenha mais de uma forma de pagamento ou seja diferente de boleto exibe a
-                    //forma de pagamento e o valor
-                    $y = $this->pagamento($x, $y + 1);
-                }
+            //Se somente tiver a forma de pagamento sem pagamento não imprimir nada
+            if (count($formaPag) == '1' && isset($formaPag[90])) {
+                $y = $y;
+            } else {
+                //caso tenha mais de uma forma de pagamento ou seja diferente de boleto exibe a
+                //forma de pagamento e o valor
+                $y = $this->pagamento($x, $y + 1);
             }
+        }
         //coloca os dados dos impostos e totais da NFe
-      //  $y = $this->imposto($x, $y + 1);
+        //  $y = $this->imposto($x, $y + 1);
         //coloca os dados do trasnporte
-      //  $y = $this->transporte($x, $y + 1);
+        //  $y = $this->transporte($x, $y + 1);
         //itens da DANFE
         $nInicial = 0;
 
-      //  $y = $this->itens($x, $y + 1, $nInicial, $hDispo1, $pag, $totPag, $hCabecItens);
+        //  $y = $this->itens($x, $y + 1, $nInicial, $hDispo1, $pag, $totPag, $hCabecItens);
 
         //coloca os dados do ISSQN
         if ($linhaISSQN == 1) {
-      //      $y = $this->issqn($x, $y + 4);
+            //      $y = $this->issqn($x, $y + 4);
         } else {
-     //       $y += 4;
+            //       $y += 4;
         }
         //coloca os dados adicionais da NFe
-     //   $y = $this->dadosAdicionais($x, $y, $this->hdadosadic);
+        //   $y = $this->dadosAdicionais($x, $y, $this->hdadosadic);
         //coloca o rodapé da página
         if ($this->orientacao == 'P') {
-     //       $this->rodape($xInic);
+            //       $this->rodape($xInic);
         } else {
-     //       $this->rodape($xInic);
+            //       $this->rodape($xInic);
         }
 
         //loop para páginas seguintes
@@ -936,7 +936,8 @@ class DanfeA5 extends DaCommon
             if (in_array($cStat, ['110', '205', '301', '302', '303'])) {
                 $resp['status'] = false;
                 $resp['message'][] = "NFe DENEGADA";
-            } elseif (in_array($cStat, ['101', '151', '135', '155'])
+            } elseif (
+                in_array($cStat, ['101', '151', '135', '155'])
                 || $this->cancelFlag === true
             ) {
                 $resp['status'] = false;
@@ -947,11 +948,12 @@ class DanfeA5 extends DaCommon
                 $tpEvento = $this->getTagValue($infEvento, "tpEvento");
                 $dhEvento = $this->toDateTime($this->getTagValue($infEvento, "dhRegEvento"))->format("d/m/Y H:i:s");
                 $nProt = $this->getTagValue($infEvento, "nProt");
-                if ($tpEvento == '110111' &&
+                if (
+                    $tpEvento == '110111' &&
                     ($cStat == '101' ||
-                     $cStat == '151' ||
-                     $cStat == '135' ||
-                     $cStat == '155')
+                        $cStat == '151' ||
+                        $cStat == '135' ||
+                        $cStat == '155')
                 ) {
                     $resp['status'] = false;
                     $resp['message'][] = "NFe CANCELADA";
@@ -1075,9 +1077,29 @@ class DanfeA5 extends DaCommon
             $CEP    = $this->formatField($CEP, "#####-###");
             $mun    = $this->getTagValue($this->enderEmit, "xMun");
             $UF     = $this->getTagValue($this->enderEmit, "UF");
-            $texto  = $lgr . ", " . $nro . $cpl . "\n" . $bairro . " - "
-                . $CEP . "\n" . $mun . " - " . $UF . " "
-                . "Fone/Fax: " . $fone . (trim($this->siteEmitente) != '' ? ' ' . $this->siteEmitente : '');
+            $linha1_partes = array_filter([$lgr, $nro]);
+            $linha1 = implode(', ', $linha1_partes) . (!empty($cpl) ? ' ' . $cpl : '');
+
+            $linha2 = implode(' - ', array_filter([$bairro, $CEP]));
+
+            $linha3 = implode(' - ', array_filter([$mun, $UF]));
+
+            $linha4_partes = [];
+            if (!empty($fone)) {
+                $linha4_partes[] = "Fone/Fax: " . $fone;
+            }
+            if (!empty(trim($this->siteEmitente))) {
+                $linha4_partes[] = $this->siteEmitente;
+            }
+            $linha4 = implode(' ', $linha4_partes);
+
+            // 2. Junta todas as linhas que não estiverem vazias com uma quebra de linha.
+            $texto = implode("\n", array_filter([
+                $linha1,
+                $linha2,
+                $linha3,
+                $linha4
+            ]));
             $this->pdf->textBox($x1, $y1, $tw, 8, $texto, $aFont, 'T', 'C', 0, '');
         }
 
@@ -1509,7 +1531,8 @@ class DanfeA5 extends DaCommon
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 1, '');
         $texto = $this->dest->getElementsByTagName("xMun")->item(0)->nodeValue;
-        if (strtoupper(trim($texto)) == "EXTERIOR"
+        if (
+            strtoupper(trim($texto)) == "EXTERIOR"
             && $this->dest->getElementsByTagName("xPais")->length > 0
         ) {
             $texto .= " - " . $this->dest->getElementsByTagName("xPais")->item(0)->nodeValue;
@@ -3116,16 +3139,16 @@ class DanfeA5 extends DaCommon
                 $yTrib += $y;
                 $diffH = $hmax - $hUsado;
 
-                    if (1 > $diffH && $i < $totItens) {
+                if (1 > $diffH && $i < $totItens) {
                     if ($pag == $totpag) {
                         $totpag++;
                     }
-                        //ultrapassa a capacidade para uma única página
-                        //o restante dos dados serão usados nas proximas paginas
-                        $nInicio = $i;
-                        break;
-                    }
-                
+                    //ultrapassa a capacidade para uma única página
+                    //o restante dos dados serão usados nas proximas paginas
+                    $nInicio = $i;
+                    break;
+                }
+
                 $y_linha = $y + $h;
 
                 //corrige o x

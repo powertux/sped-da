@@ -403,7 +403,7 @@ class Danfe extends DaCommon
         $this->gerarInformacoesAutomaticas = filter_var($gerarInformacoesAutomaticas, FILTER_VALIDATE_BOOLEAN);
     }
 
-     /** Atribui o Site do Emitente que será impresso no cabecalho, ao lado do Fone/Fax.
+    /** Atribui o Site do Emitente que será impresso no cabecalho, ao lado do Fone/Fax.
      * @param string $siteEmitente
      */
     public function setSiteEmitente($siteEmitente = '')
@@ -732,8 +732,8 @@ class Danfe extends DaCommon
         }
         //caso tenha boleto imprimir fatura
         if ($this->dup->length > 0) {
-            if( empty($this->tPagPermitidasExibirFaturaDuplicata) || in_array($fPag, $this->tPagPermitidasExibirFaturaDuplicata) ) {
-               $y = $this->fatura($x, $y + 1);
+            if (empty($this->tPagPermitidasExibirFaturaDuplicata) || in_array($fPag, $this->tPagPermitidasExibirFaturaDuplicata)) {
+                $y = $this->fatura($x, $y + 1);
             }
         } elseif ($this->exibirTextoFatura) {
             //Se somente tiver a forma de pagamento sem pagamento não imprimir nada
@@ -984,7 +984,8 @@ class Danfe extends DaCommon
                 $resp['status'] = false;
                 $resp['message'][] = "NFe DENEGADA";
                 $resp['submessage'] = $this->infProt->getElementsByTagName('xMotivo')->item(0)->nodeValue;
-            } elseif (in_array($cStat, ['101', '151', '135', '155'])
+            } elseif (
+                in_array($cStat, ['101', '151', '135', '155'])
                 || $this->cancelFlag === true
             ) {
                 $resp['status'] = false;
@@ -995,7 +996,8 @@ class Danfe extends DaCommon
                 $tpEvento = $this->getTagValue($infEvento, "tpEvento");
                 $dhEvento = $this->toDateTime($this->getTagValue($infEvento, "dhRegEvento"))->format("d/m/Y H:i:s");
                 $nProt = $this->getTagValue($infEvento, "nProt");
-                if ($tpEvento == '110111' &&
+                if (
+                    $tpEvento == '110111' &&
                     ($cStat == '101' ||
                         $cStat == '151' ||
                         $cStat == '135' ||
@@ -1123,9 +1125,29 @@ class Danfe extends DaCommon
             $CEP    = $this->formatField($CEP, "#####-###");
             $mun    = $this->getTagValue($this->enderEmit, "xMun");
             $UF     = $this->getTagValue($this->enderEmit, "UF");
-            $texto  = $lgr . ", " . $nro . $cpl . "\n" . $bairro . " - "
-                . $CEP . "\n" . $mun . " - " . $UF . " "
-                . "Fone/Fax: " . $fone . (trim($this->siteEmitente) != '' ? ' ' . $this->siteEmitente : '');
+            $linha1_partes = array_filter([$lgr, $nro]);
+            $linha1 = implode(', ', $linha1_partes) . (!empty($cpl) ? ' ' . $cpl : '');
+
+            $linha2 = implode(' - ', array_filter([$bairro, $CEP]));
+
+            $linha3 = implode(' - ', array_filter([$mun, $UF]));
+
+            $linha4_partes = [];
+            if (!empty($fone)) {
+                $linha4_partes[] = "Fone/Fax: " . $fone;
+            }
+            if (!empty(trim($this->siteEmitente))) {
+                $linha4_partes[] = $this->siteEmitente;
+            }
+            $linha4 = implode(' ', $linha4_partes);
+
+            // 2. Junta todas as linhas que não estiverem vazias com uma quebra de linha.
+            $texto = implode("\n", array_filter([
+                $linha1,
+                $linha2,
+                $linha3,
+                $linha4
+            ]));
             $this->pdf->textBox($x1, $y1, $tw, 8, $texto, $aFont, 'T', 'C', 0, '');
         }
 
@@ -1557,7 +1579,8 @@ class Danfe extends DaCommon
         $aFont = ['font' => $this->fontePadrao, 'size' => 6, 'style' => ''];
         $this->pdf->textBox($x, $y, $w, $h, $texto, $aFont, 'T', 'L', 1, '');
         $texto = $this->dest->getElementsByTagName("xMun")->item(0)->nodeValue;
-        if (strtoupper(trim($texto)) === "EXTERIOR"
+        if (
+            strtoupper(trim($texto)) === "EXTERIOR"
             && $this->dest->getElementsByTagName("xPais")->length > 0
         ) {
             $texto .= " - " . $this->dest->getElementsByTagName("xPais")->item(0)->nodeValue;
@@ -2775,16 +2798,16 @@ class Danfe extends DaCommon
                 if ($rastro->length === 1) {
                     $i = 0;
                     //while ($i < $rastro->length) {
-                        $dFab = $this->getTagDate($rastro->item($i), 'dFab');
-                        $datafab = " Fab: " . $dFab;
-                        $dVal = $this->getTagDate($rastro->item($i), 'dVal');
-                        $dataval = " Val: " . $dVal;
-                        $loteTxt .= $this->getTagValue($rastro->item($i), 'nLote', ' Lote: ');
-                        $loteTxt .= $this->getTagValue($rastro->item($i), 'qLote', ' Quant: ');
-                        $loteTxt .= $datafab; //$this->getTagDate($rastro->item($i), 'dFab', ' Fab: ');
-                        $loteTxt .= $dataval; //$this->getTagDate($rastro->item($i), 'dVal', ' Val: ');
-                        $loteTxt .= $this->getTagValue($rastro->item($i), 'vPMC', ' PMC: ');
-                        //$i++;
+                    $dFab = $this->getTagDate($rastro->item($i), 'dFab');
+                    $datafab = " Fab: " . $dFab;
+                    $dVal = $this->getTagDate($rastro->item($i), 'dVal');
+                    $dataval = " Val: " . $dVal;
+                    $loteTxt .= $this->getTagValue($rastro->item($i), 'nLote', ' Lote: ');
+                    $loteTxt .= $this->getTagValue($rastro->item($i), 'qLote', ' Quant: ');
+                    $loteTxt .= $datafab; //$this->getTagDate($rastro->item($i), 'dFab', ' Fab: ');
+                    $loteTxt .= $dataval; //$this->getTagDate($rastro->item($i), 'dVal', ' Val: ');
+                    $loteTxt .= $this->getTagValue($rastro->item($i), 'vPMC', ' PMC: ');
+                    //$i++;
                     //}
                 }
                 if ($loteTxt != '') {
@@ -3247,10 +3270,10 @@ class Danfe extends DaCommon
                     if ($pag == $totpag) {
                         $totpag++;
                     }
-                        //ultrapassa a capacidade para uma única página
-                        //o restante dos dados serão usados nas proximas paginas
-                        $nInicio = $i;
-                        break;
+                    //ultrapassa a capacidade para uma única página
+                    //o restante dos dados serão usados nas proximas paginas
+                    $nInicio = $i;
+                    break;
                 }
 
                 $y_linha = $y + $h;
@@ -3281,9 +3304,9 @@ class Danfe extends DaCommon
                 $veicnovo = $this->itemVeiculoNovo($prod);
                 $aFont = ['font' => $this->fontePadrao, 'size' => 5, 'style' => ''];
                 $this->pdf->textBox(
-                    $x-$w3,
-                    $y+4,
-                    $this->wPrint-($w1+$w2)-2,
+                    $x - $w3,
+                    $y + 4,
+                    $this->wPrint - ($w1 + $w2) - 2,
                     22,
                     $veicnovo,
                     $aFont,
