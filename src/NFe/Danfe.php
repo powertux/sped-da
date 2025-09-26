@@ -1126,31 +1126,28 @@ class Danfe extends DaCommon
             $mun    = $this->getTagValue($this->enderEmit, "xMun");
             $UF     = $this->getTagValue($this->enderEmit, "UF");
             // 1. Cria um array com as partes de cada linha do endereço.
-            $linha1 = implode(', ', array_filter([$lgr, $nro])) . (!empty($cpl) ? ' ' . $cpl : '');
-            $linha2 = implode(' - ', array_filter([$bairro, $CEP]));
-            $linha3_cidade_estado = implode(' - ', array_filter([$mun, $UF]));
+            $linha1_partes = array_filter([$lgr, $nro]);
+            $linha1 = implode(', ', $linha1_partes) . (!empty($cpl) ? ' ' . $cpl : '');
 
-            // Monta a parte do contato
-            $contato_partes = [];
+            $linha2 = implode(' - ', array_filter([$bairro, $CEP]));
+
+            $linha3 = implode(' - ', array_filter([$mun, $UF]));
+
+            $linha4_partes = [];
             if (!empty($fone)) {
-                $contato_partes[] = "Fone/Fax: " . $fone;
+                $linha4_partes[] = "Fone/Fax: " . $fone;
             }
             if (!empty(trim($this->siteEmitente))) {
-                $contato_partes[] = $this->siteEmitente;
+                $linha4_partes[] = $this->siteEmitente;
             }
-            $linha4_contato = implode(' ', $contato_partes);
+            $linha4 = implode(' ', $linha4_partes);
 
-            // --- CORREÇÃO AQUI ---
-            // 2. Junta a linha da cidade/estado com a linha de contato em uma única linha,
-            //    separando por um espaço.
-            $linha_cidade_e_contato = implode(' ', array_filter([$linha3_cidade_estado, $linha4_contato]));
-
-
-            // 3. Junta todas as linhas finais com a quebra de linha "\n".
+            // 2. Junta todas as linhas que não estiverem vazias com uma quebra de linha.
             $texto = implode("\n", array_filter([
                 $linha1,
                 $linha2,
-                $linha_cidade_e_contato // Usa a nova linha combinada
+                $linha3,
+                $linha4
             ]));
             $this->pdf->textBox($x1, $y1, $tw, 8, $texto, $aFont, 'T', 'C', 0, '');
         }
